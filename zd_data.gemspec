@@ -6,8 +6,8 @@ require 'version'
 Gem::Specification.new do |s|
 
   s.name    = "zd_data"
-  s.version = ZdRequester::VERSION
-  s.date    = ZdRequester::VERSION_DATE
+  s.version = ZdData::VERSION
+  s.date    = ZdData::VERSION_DATE
   s.summary = "Quickly setup data into your Zd account"
   s.description = "Quickly setup data into your Zd account"
   s.authors = ["Anthony Woo"]
