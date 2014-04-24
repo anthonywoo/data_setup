@@ -42,12 +42,28 @@ module ZdData
     end
 
     def setup_data!
-      create_orgs_and_users
-      create_tickets
-      create_ticket_fields
-      create_macros
-      create_user_fields
-      create_groups
+      create_orgs_and_users                 #creates 10 orgs and 300 end-users
+      create_tickets                        #creates 200 tickets
+      create_ticket_fields                  #creates 6 ticket fields
+      create_macros                         #creates 20 macros
+      create_user_fields                    #creates 4 user fields
+      create_groups                         #creates 15 groups
+      create_forum_topic_and_topic_comments #create a forum, topics, and topic comments
+      puts "data setup complete"
+    end
+
+    def create_forum_topic_and_topic_comments
+      puts "creating a forum"
+      self.class.send(:define_method, :default_data, lambda {{"forum" => {"name" => "ZdForum#{rand(10000000)}", "access" => "everybody", "locked" => false}}})
+      forum = multi_post(1, "api/v2/forums", "forum")
+
+      puts "creating 10 topics"
+      self.class.send(:define_method, :default_data, lambda {{"topic" => {"title" => "ZdTopic#{rand(10000000)}", "body" => "stuff", "forum_id" => forum[0]}}})
+      topics = multi_post(10, "api/v2/topics", "topic")
+
+      puts "creating 15 topic comments"
+      self.class.send(:define_method, :default_data, lambda {{"topic_comment" => {"body" => "ZdComment#{rand(1000000)}"}}})
+      multi_post(15, "api/v2/topics/#{topics[0]}/comments", "topic_comment")
     end
 
     def create_groups
@@ -79,12 +95,12 @@ module ZdData
     def create_orgs_and_users
       self.class.send(:define_method, :default_data, lambda {{"organization" => {"name" => "ZdOrg #{rand(10000000)}"}}})
       puts "creating 10 orgs"
-      orgs = multi_post(3, "/api/v2/organizations", "organization")
+      orgs = multi_post(10, "/api/v2/organizations", "organization")
 
-      puts "creating 50 users in three of those orgs"
+      puts "creating 100 users in three of those orgs"
       orgs[0..2].each do |org_id|
         self.class.send(:define_method, :default_data, lambda {{"user" => {"name" => "ZdUser #{rand(10000000)}", "organization_id" => org_id}}})
-        multi_post(15, "/api/v2/users", "user")
+        multi_post(100, "/api/v2/users", "user")
       end
     end
 
