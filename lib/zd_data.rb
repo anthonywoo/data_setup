@@ -47,6 +47,23 @@ module ZdData
       create_ticket_fields
       create_macros
       create_user_fields
+      create_groups
+    end
+
+    def create_groups
+      puts "creating 15 groups"
+      self.class.send(:define_method, :default_data, lambda {{"group" => {"name" => "ZdGroup #{rand(10000000)}"}}})
+      multi_post(15, "api/v2/groups", "group")
+    end
+
+    def create_user_fields
+      puts "creating some user fields"
+      self.class.send(:define_method, :default_data, lambda {{"user_field" => {"type" => "text", "title" => "Age #{rand(10000000)}", "key" => "age_#{rand(10000000)}"}}})
+      multi_post(2, "api/v2/user_fields", "user_field")
+
+      self.class.send(:define_method, :default_data, lambda {{"user_field" => {"type" => "checkbox", "title" => "Yes #{rand(10000000)}", "key" => "yes_#{rand(10000000)}"}}})
+      multi_post(2, "api/v2/user_fields", "user_field")
+
     end
 
     def create_macros
@@ -60,7 +77,7 @@ module ZdData
     end
 
     def create_orgs_and_users
-      self.class.send(:define_method, :default_data, lambda {{"organization" => {"name" => "ZdData #{rand(10000000)}"}}})
+      self.class.send(:define_method, :default_data, lambda {{"organization" => {"name" => "ZdOrg #{rand(10000000)}"}}})
       puts "creating 10 orgs"
       orgs = multi_post(3, "/api/v2/organizations", "organization")
 
