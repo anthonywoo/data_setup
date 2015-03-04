@@ -48,6 +48,7 @@ module ZdData
       create_macros                         #creates 20 macros
       create_user_fields                    #creates 4 user fields
       create_groups                         #creates 15 groups
+      create_admins
       create_forum_topic_and_topic_comments #create a forum, topics, and topic comments
       puts "data setup complete"
     end
@@ -79,7 +80,6 @@ module ZdData
 
       self.class.send(:define_method, :default_data, lambda {{"user_field" => {"type" => "checkbox", "title" => "Yes #{rand(10000000)}", "key" => "yes_#{rand(10000000)}"}}})
       multi_post(2, "api/v2/user_fields", "user_field")
-
     end
 
     def create_macros
@@ -132,6 +132,12 @@ module ZdData
 
     def return_id(response, key)
       JSON.parse(response.body)[key]["id"]
+    end
+
+    def create_admins
+      puts "creating 2 admins"
+      self.class.send(:define_method, :default_data, lambda {{"user" => {"name" => "autouser#{rand(10000000)}", "email" => "autoemail#{rand(1000000)}@zzz.zz", "role" => "admin"}}})
+      tickets = multi_post(2, "/api/v2/users", "user")
     end
 
     def default_data
